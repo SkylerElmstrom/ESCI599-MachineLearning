@@ -1,0 +1,18 @@
+---
+title: "Week1-Bootstrap"
+author: "Skyler Elmstrom"
+date: "1/6/2021"
+output:
+  html_document:
+    code_folding: hide
+    code_download: true
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, message=F, warning=F)
+options(tigris_use_cache = TRUE)
+```
+
+
+
