@@ -35,7 +35,7 @@ sdiBootFunc <- function(x, indicies) {
 }
 
 # Single Variable Bootstrapping using boot()
-sdiOakBoot <- boot(birds$Oak1, sdiBootFunc, R=1e4)
+sdiOak1Boot <- boot(birds$Oak1, sdiBootFunc, R=1e4)
 ```
 <br>
 
