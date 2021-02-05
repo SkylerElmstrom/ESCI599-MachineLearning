@@ -1,0 +1,74 @@
+---
+title: "Module 5 - Decision Trees"
+author: "Skyler Elmstrom"
+date: "2/4/2021"
+output:
+  html_document:
+    code_folding: hide
+    code_download: true
+    keep_md: true
+    tidy: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = T, message=F, warning=F)
+
+library(tidyverse)
+library(C50)
+library(caret)
+```
+
+```{r include = F}
+# Entropy
+
+dat %>% count(FireWarning) %>% 
+  mutate(prop = n / sum(n)) %>%
+  summarise(S = sum(-1 * prop * log2(prop))) %>% pull(S)
+
+entropy <- function(data, target) {
+  data %>% count( {{target}} ) %>% 
+    mutate(prop = n / sum(n)) %>%
+    summarise(S = sum(-1 * prop * log2(prop))) %>%  
+    pull(S)
+}
+
+#Information Gain
+S1 <- dat %>% entropy(FireWarning)
+S_by_SkyCondition <- dat %>% group_by(SkyCondition) %>% 
+  entropy(FireWarning)
+# get weights as proportions
+n_SkyCondition <- dat %>% count(across(SkyCondition))  %>% pull(n)
+prop_SkyCondition <- n_SkyCondition / sum(n_SkyCondition)
+S2 <- sum(prop_SkyCondition*S_by_SkyCondition) 
+#compute IG
+S1-S2
+
+IG <- function(data,target,feature){
+  # parent (target) entropy aka s1
+  s1 <- data %>% entropy( {{target}})
+  # feature entropy (target entropy by each feature )
+  sTmp <- data %>% group_by( {{feature}} ) %>% entropy( {{target}} )
+  # number in each feature
+  n_feature <- data %>% count(across( {{feature}} ))  %>% pull(n)
+  # proportion (frequency) in each feature for weights
+  p_feature <- n_feature / sum(n_feature)
+  s2 <- sum(p_feature*sTmp)
+  #compute IG
+  s1-s2
+}
+
+```
+
+
+```{r}
+# My Work
+mushrooms <- read_csv("Data/mushroomsClean.csv")
+mushrooms <- mushrooms %>% mutate(across(where(is_character),as_factor))
+
+# Filter by variables I might be able to deduce from the wild: color, shape, where I found it
+
+# cap surface, stalk shape, 
+mushModel <- C5.0(toxicity~.,data=mushrooms)
+summary(mushModel)
+```
+
